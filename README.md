@@ -71,6 +71,18 @@ The service applies rate limits to protect the endpoint from abuse and preserve 
 
 These values balance responsiveness for legitimate users with protection against repeated bulk submission attacks. The minute-level burst cap prevents quick retries and the daily cap limits long-term scraping.
 
+Running `test_rate_limit.py` demonstrates what happens when the limit is exceeded. The first 10 requests succeed with `200 OK`; the 11th returns `429 TOO MANY REQUESTS`:
+
+```
+Sending 11 requests as creator_id='rate_limit_tester' (limit: 10/minute)
+
+Request  1: 200 OK  — label: Uncertain, content_id: 3e2a1f8b...
+Request  2: 200 OK  — label: Uncertain, content_id: 7c4d9e2a...
+...
+Request 10: 200 OK  — label: Uncertain, content_id: 1b8f3c6d...
+Request 11: 429 TOO MANY REQUESTS — 10 per 1 minute
+```
+
 ## Audit log and appeals
 
 Every submission is written to `audit.log` as a JSON line containing:
