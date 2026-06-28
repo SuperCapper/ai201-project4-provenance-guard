@@ -1,0 +1,229 @@
+{
+  "5c4b070e03a04c629d95ea217ee3d694": {
+    "content_id": "5c4b070e03a04c629d95ea217ee3d694",
+    "creator_id": "tester",
+    "text": "Artificial intelligence represents a transformative paradigm shift in modern society. It is important to note that while the benefits of AI are numerous, it is equally essential to consider the ethical implications. Furthermore, stakeholders across various sectors must collaborate to ensure responsible deployment.",
+    "label": "Uncertain",
+    "status": "classified",
+    "combined": {
+      "mean": 0.4994,
+      "lower90": 0.374,
+      "upper90": 0.6249,
+      "width": 0.2509
+    },
+    "signal_1": {
+      "model_score": 0.6147,
+      "explanation": "mocked deterministic score from text hash",
+      "prompt_hash": "e5881dd638"
+    },
+    "signal_2": {
+      "heuristic_score": 0.1535,
+      "features": {
+        "tok_count": 43,
+        "type_token_ratio": 0.907,
+        "sent_len_var": 29.5556,
+        "punct_density": 0.1163
+      }
+    },
+    "created_at": "2026-06-28T21:37:34.842656+00:00"
+  },
+  "9ec60a371e77475f8886515da405354c": {
+    "content_id": "9ec60a371e77475f8886515da405354c",
+    "creator_id": "tester",
+    "text": "ok so i finally tried that new ramen place downtown and honestly? the broth was fine but they put WAY too much sodium in it and it was underwhelming. the rest of my friend got the spicy version and said it was better.",
+    "label": "Uncertain",
+    "status": "classified",
+    "combined": {
+      "mean": 0.7684,
+      "lower90": 0.6625,
+      "upper90": 0.8742,
+      "width": 0.2117
+    },
+    "signal_1": {
+      "model_score": 0.8844,
+      "explanation": "mocked deterministic score from text hash",
+      "prompt_hash": "e5881dd638"
+    },
+    "signal_2": {
+      "heuristic_score": 0.4739,
+      "features": {
+        "tok_count": 43,
+        "type_token_ratio": 0.814,
+        "sent_len_var": 4.2222,
+        "punct_density": 0.0698
+      }
+    },
+    "created_at": "2026-06-28T21:37:34.854906+00:00"
+  },
+  "51c8c9cc504f4067a38c95abe5101427": {
+    "content_id": "51c8c9cc504f4067a38c95abe5101427",
+    "creator_id": "tester",
+    "text": "The relationship between monetary policy and asset price inflation has been extensively studied in the literature. Central banks face a fundamental tension between their mandate for price stability and the unintended consequences of prolonged low interest rates on equity and real estate valuations.",
+    "label": "Uncertain",
+    "status": "classified",
+    "combined": {
+      "mean": 0.5738,
+      "lower90": 0.4497,
+      "upper90": 0.6978,
+      "width": 0.2481
+    },
+    "signal_1": {
+      "model_score": 0.6963,
+      "explanation": "mocked deterministic score from text hash",
+      "prompt_hash": "e5881dd638"
+    },
+    "signal_2": {
+      "heuristic_score": 0.2209,
+      "features": {
+        "tok_count": 43,
+        "type_token_ratio": 0.8837,
+        "sent_len_var": 30.25,
+        "punct_density": 0.0465
+      }
+    },
+    "created_at": "2026-06-28T21:37:34.879827+00:00"
+  },
+  "b64ab32b77674769a31ed5d2eb0f1ffb": {
+    "content_id": "b64ab32b77674769a31ed5d2eb0f1ffb",
+    "creator_id": "tester",
+    "text": "I've been thinking a lot about remote work lately. There are genuine tradeoffs – flexibility and no commute on one side, isolation and blurred work-life boundaries on the other. Studies show productivity varies widely by individual and role type.",
+    "label": "Uncertain",
+    "status": "classified",
+    "combined": {
+      "mean": 0.1849,
+      "lower90": 0.0875,
+      "upper90": 0.2822,
+      "width": 0.1948
+    },
+    "signal_1": {
+      "model_score": 0.187,
+      "explanation": "mocked deterministic score from text hash",
+      "prompt_hash": "e5881dd638"
+    },
+    "signal_2": {
+      "heuristic_score": 0.1154,
+      "features": {
+        "tok_count": 39,
+        "type_token_ratio": 0.9231,
+        "sent_len_var": 24.6667,
+        "punct_density": 0.1538
+      }
+    },
+    "created_at": "2026-06-28T21:37:34.905433+00:00"
+  },
+  "3b5b3e2e1d124089a2b7fe91516c377d": {
+    "content_id": "3b5b3e2e1d124089a2b7fe91516c377d",
+    "creator_id": "tester",
+    "text": "Artificial intelligence represents a transformative paradigm shift in modern society. It is important to note that while the benefits of AI are numerous, it is equally essential to consider the ethical implications. Furthermore, stakeholders across various sectors must collaborate to ensure responsible deployment.",
+    "label": "Uncertain",
+    "status": "under_review",
+    "combined": {
+      "mean": 0.4994,
+      "lower90": 0.374,
+      "upper90": 0.6249,
+      "width": 0.2509
+    },
+    "signal_1": {
+      "model_score": 0.6147,
+      "explanation": "mocked deterministic score from text hash",
+      "prompt_hash": "e5881dd638"
+    },
+    "signal_2": {
+      "heuristic_score": 0.1535,
+      "features": {
+        "tok_count": 43,
+        "type_token_ratio": 0.907,
+        "sent_len_var": 29.5556,
+        "punct_density": 0.1163
+      }
+    },
+    "created_at": "2026-06-28T21:38:24.310985+00:00",
+    "appeal_id": "647966e38f814deaa8e81159fee47333",
+    "appeal_reason": "Please review; I believe this is human-generated.",
+    "appeal_requested_at": "2026-06-28T21:38:24.407465+00:00"
+  },
+  "094cc1d9b0a747eba8b65f2c4cb76f02": {
+    "content_id": "094cc1d9b0a747eba8b65f2c4cb76f02",
+    "creator_id": "tester",
+    "text": "ok so i finally tried that new ramen place downtown and honestly? the broth was fine but they put WAY too much sodium in it and it was underwhelming. the rest of my friend got the spicy version and said it was better.",
+    "label": "Uncertain",
+    "status": "classified",
+    "combined": {
+      "mean": 0.7684,
+      "lower90": 0.6625,
+      "upper90": 0.8742,
+      "width": 0.2117
+    },
+    "signal_1": {
+      "model_score": 0.8844,
+      "explanation": "mocked deterministic score from text hash",
+      "prompt_hash": "e5881dd638"
+    },
+    "signal_2": {
+      "heuristic_score": 0.4739,
+      "features": {
+        "tok_count": 43,
+        "type_token_ratio": 0.814,
+        "sent_len_var": 4.2222,
+        "punct_density": 0.0698
+      }
+    },
+    "created_at": "2026-06-28T21:38:24.337845+00:00"
+  },
+  "c065741ace3d4fae9f1595d51203de48": {
+    "content_id": "c065741ace3d4fae9f1595d51203de48",
+    "creator_id": "tester",
+    "text": "The relationship between monetary policy and asset price inflation has been extensively studied in the literature. Central banks face a fundamental tension between their mandate for price stability and the unintended consequences of prolonged low interest rates on equity and real estate valuations.",
+    "label": "Uncertain",
+    "status": "classified",
+    "combined": {
+      "mean": 0.5738,
+      "lower90": 0.4497,
+      "upper90": 0.6978,
+      "width": 0.2481
+    },
+    "signal_1": {
+      "model_score": 0.6963,
+      "explanation": "mocked deterministic score from text hash",
+      "prompt_hash": "e5881dd638"
+    },
+    "signal_2": {
+      "heuristic_score": 0.2209,
+      "features": {
+        "tok_count": 43,
+        "type_token_ratio": 0.8837,
+        "sent_len_var": 30.25,
+        "punct_density": 0.0465
+      }
+    },
+    "created_at": "2026-06-28T21:38:24.357857+00:00"
+  },
+  "09b2fd8247324780b1193a32ff265c2c": {
+    "content_id": "09b2fd8247324780b1193a32ff265c2c",
+    "creator_id": "tester",
+    "text": "I've been thinking a lot about remote work lately. There are genuine tradeoffs – flexibility and no commute on one side, isolation and blurred work-life boundaries on the other. Studies show productivity varies widely by individual and role type.",
+    "label": "Uncertain",
+    "status": "classified",
+    "combined": {
+      "mean": 0.1849,
+      "lower90": 0.0875,
+      "upper90": 0.2822,
+      "width": 0.1948
+    },
+    "signal_1": {
+      "model_score": 0.187,
+      "explanation": "mocked deterministic score from text hash",
+      "prompt_hash": "e5881dd638"
+    },
+    "signal_2": {
+      "heuristic_score": 0.1154,
+      "features": {
+        "tok_count": 39,
+        "type_token_ratio": 0.9231,
+        "sent_len_var": 24.6667,
+        "punct_density": 0.1538
+      }
+    },
+    "created_at": "2026-06-28T21:38:24.373574+00:00"
+  }
+}

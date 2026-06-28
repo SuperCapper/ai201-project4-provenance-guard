@@ -4,14 +4,24 @@ import uuid
 import hashlib
 from datetime import datetime, timezone
 from flask import Flask, request, jsonify
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 from dotenv import load_dotenv
 
 load_dotenv()
 
 APP_ROOT = os.path.dirname(__file__)
 AUDIT_LOG = os.path.join(APP_ROOT, "audit.log")
+CONTENT_STORE = os.path.join(APP_ROOT, "content_store.json")
 
 app = Flask(__name__)
+
+limiter = Limiter(
+    key_func=lambda: request.get_json(silent=True).get("creator_id") if request.is_json and request.get_json(silent=True) else get_remote_address(),
+    app=app,
+    storage_uri="memory://",
+    default_limits=[],
+)
 
 
 def deterministic_score_from_text(text: str) -> float:
@@ -116,12 +126,36 @@ def signal1_groq_mock(text: str) -> dict:
 
 def write_audit_entry(entry: dict):
     entry_json = json.dumps(entry, ensure_ascii=False)
-    # ensure audit log directory exists
     with open(AUDIT_LOG, "a", encoding="utf-8") as f:
         f.write(entry_json + "\n")
 
 
+def save_content_record(content_id: str, record: dict):
+    store = {}
+    if os.path.exists(CONTENT_STORE):
+        with open(CONTENT_STORE, "r", encoding="utf-8") as f:
+            try:
+                store = json.load(f)
+            except json.JSONDecodeError:
+                store = {}
+    store[content_id] = record
+    with open(CONTENT_STORE, "w", encoding="utf-8") as f:
+        json.dump(store, f, ensure_ascii=False, indent=2)
+
+
+def load_content_record(content_id: str):
+    if not os.path.exists(CONTENT_STORE):
+        return None
+    with open(CONTENT_STORE, "r", encoding="utf-8") as f:
+        try:
+            store = json.load(f)
+        except json.JSONDecodeError:
+            return None
+    return store.get(content_id)
+
+
 @app.route("/submit", methods=["POST"])
+@limiter.limit("10 per minute;100 per day")
 def submit():
     data = request.get_json(force=True)
     text = data.get("text")
@@ -164,6 +198,19 @@ def submit():
     }
     write_audit_entry(audit)
 
+    content_record = {
+        "content_id": content_id,
+        "creator_id": creator_id,
+        "text": text,
+        "label": label,
+        "status": "classified",
+        "combined": combined,
+        "signal_1": s1,
+        "signal_2": s2,
+        "created_at": audit["timestamp"],
+    }
+    save_content_record(content_id, content_record)
+
     resp = {
         "content_id": content_id,
         "signals": {"signal_1": s1, "signal_2": s2},
@@ -171,6 +218,52 @@ def submit():
         "label": label,
     }
     return jsonify(resp)
+
+
+@app.route("/appeal", methods=["POST"])
+def appeal():
+    data = request.get_json(force=True)
+    content_id = data.get("content_id")
+    creator_id = data.get("creator_id")
+    reason = data.get("reason", "")
+
+    if not content_id:
+        return jsonify({"error": "missing 'content_id' field"}), 400
+    if not creator_id:
+        return jsonify({"error": "missing 'creator_id' field"}), 400
+
+    record = load_content_record(content_id)
+    if not record:
+        return jsonify({"error": "content_id not found"}), 404
+    if record.get("creator_id") != creator_id:
+        return jsonify({"error": "creator_id does not match original submitter"}), 403
+
+    appeal_id = uuid.uuid4().hex
+    appeal_timestamp = datetime.now(timezone.utc).isoformat()
+
+    record["status"] = "under_review"
+    record["appeal_id"] = appeal_id
+    record["appeal_reason"] = reason
+    record["appeal_requested_at"] = appeal_timestamp
+    save_content_record(content_id, record)
+
+    audit = {
+        "content_id": content_id,
+        "creator_id": creator_id,
+        "appeal_id": appeal_id,
+        "timestamp": appeal_timestamp,
+        "event": "appeal_requested",
+        "reason": reason,
+        "status": "under_review",
+    }
+    write_audit_entry(audit)
+
+    return jsonify({
+        "content_id": content_id,
+        "appeal_id": appeal_id,
+        "status": "under_review",
+        "message": "Appeal received and content is under review.",
+    })
 
 
 @app.route("/log", methods=["GET"])
