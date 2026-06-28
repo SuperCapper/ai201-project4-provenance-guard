@@ -23,6 +23,88 @@ def deterministic_score_from_text(text: str) -> float:
     return (val % 10000) / 10000.0
 
 
+def signal2_stylometric(text: str) -> dict:
+    """Compute simple stylometric heuristics and return a heuristic_score in [0,1].
+    Features: type-token ratio, sentence length variance, punctuation density.
+    Heuristic score maps higher -> more likely AI.
+    """
+    # tokens and types
+    toks = [t for t in text.split() if t]
+    tok_count = len(toks)
+    types = len(set(toks)) if tok_count > 0 else 0
+    ttr = types / tok_count if tok_count > 0 else 0.0
+
+    # sentences
+    sents = [s.strip() for s in text.replace('!', '.').replace('?', '.').split('.') if s.strip()]
+    sent_lens = [len(s.split()) for s in sents] if sents else [tok_count]
+    import statistics
+    sent_var = statistics.pvariance(sent_lens) if len(sent_lens) > 0 else 0.0
+
+    # punctuation density (punctuation chars per token)
+    punct_count = sum(1 for ch in text if ch in '.,;:!?"\'"()-')
+    punct_density = punct_count / tok_count if tok_count > 0 else 0.0
+
+    # Map features to partial signals in [0,1] where higher implies AI-like
+    # type-token ratio: AI tends to have lower TTR -> partial = 1 - ttr (clamped)
+    part_ttr = max(0.0, min(1.0, 1.0 - ttr))
+
+    # sentence variance: AI tends to have lower variance -> partial = 1 - sigmoid(norm_var)
+    # normalize variance by an empirical cap
+    var_cap = 20.0
+    norm_var = min(sent_var / var_cap, 1.0)
+    part_var = 1.0 - norm_var
+
+    # punctuation density: assume AI uses slightly less punctuation -> more AI if low density
+    # normalize by typical density ~0.2
+    norm_punct = min(punct_density / 0.25, 1.0)
+    part_punct = 1.0 - norm_punct
+
+    # combine with weights
+    w_ttr = 0.5
+    w_var = 0.3
+    w_punct = 0.2
+    heuristic_score = w_ttr * part_ttr + w_var * part_var + w_punct * part_punct
+    heuristic_score = max(0.0, min(1.0, heuristic_score))
+
+    features = {
+        "tok_count": tok_count,
+        "type_token_ratio": round(ttr, 4),
+        "sent_len_var": round(sent_var, 4),
+        "punct_density": round(punct_density, 4),
+    }
+    return {"heuristic_score": round(heuristic_score, 4), "features": features}
+
+
+def combine_signals(model_score: float, heuristic_score: float, k_model: float = 30.0, k_heuristic: float = 10.0):
+    """Combine two calibrated scores using Beta pseudo-count fusion and return mean and approx 90% interval.
+    Uses normal approximation for the Beta credible interval.
+    """
+    alpha_prior = 1.0
+    beta_prior = 1.0
+
+    alpha_m = model_score * k_model
+    beta_m = (1.0 - model_score) * k_model
+    alpha_h = heuristic_score * k_heuristic
+    beta_h = (1.0 - heuristic_score) * k_heuristic
+
+    alpha = alpha_prior + alpha_m + alpha_h
+    beta = beta_prior + beta_m + beta_h
+    mean = alpha / (alpha + beta)
+
+    # approximate variance and 90% interval using normal approx
+    import math
+
+    var = mean * (1 - mean) / (alpha + beta + 1)
+    sd = math.sqrt(var) if var > 0 else 0.0
+    z = 1.645
+    lower = max(0.0, mean - z * sd)
+    upper = min(1.0, mean + z * sd)
+    width = upper - lower
+    return {"mean": round(mean, 4), "lower90": round(lower, 4), "upper90": round(upper, 4), "width": round(width, 4)}
+
+
+
+
 def signal1_groq_mock(text: str) -> dict:
     """Mocked Groq response matching our planning.md signature.
     Returns model_score, explanation, prompt_hash."""
@@ -52,27 +134,41 @@ def submit():
     # Run first detection signal (mocked Groq)
     s1 = signal1_groq_mock(text)
     model_score = s1["model_score"]
+    # Run second detection signal (stylometric)
+    s2 = signal2_stylometric(text)
+    heuristic_score = s2["heuristic_score"]
 
-    # Simple placeholder attribution (will be replaced by combiner later)
-    attribution = "likely_ai" if model_score >= 0.5 else "likely_human"
+    # Combine signals into posterior and interval
+    combined = combine_signals(model_score, heuristic_score)
 
-    # Build audit entry
+    # Map to label per planning thresholds
+    width = combined["width"]
+    mean = combined["mean"]
+    if mean >= 0.85 and width <= 0.20:
+        label = "High-confidence AI"
+    elif mean <= 0.15 and width <= 0.20:
+        label = "High-confidence human"
+    else:
+        label = "Uncertain"
+
+    # Build audit entry including both signals and combined result
     audit = {
         "content_id": content_id,
         "creator_id": creator_id,
         "timestamp": datetime.now(timezone.utc).isoformat(),
-        "attribution": attribution,
-        "confidence": model_score,
         "signal_1": s1,
+        "signal_2": s2,
+        "combined": combined,
+        "label": label,
         "status": "classified",
     }
     write_audit_entry(audit)
 
     resp = {
         "content_id": content_id,
-        "attribution": attribution,
-        "confidence": model_score,
-        "label_text": attribution,
+        "signals": {"signal_1": s1, "signal_2": s2},
+        "combined": combined,
+        "label": label,
     }
     return jsonify(resp)
 
